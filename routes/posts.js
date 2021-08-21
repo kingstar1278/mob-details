@@ -1,57 +1,75 @@
 const express = require('express');
-
 const router = express.Router();
-const postmodel = require('../models/posts');
+const postmodel = require('../models/post');
 
-
-router.get('/',async (req, res) => {
+router.get('/' , async(req,res) => {
     try{
-        const findpost = await postmodel.find();
-        res.json(findpost);
+        const posts = await postmodel.find();
+        res.json(posts);
     }catch(err){
-        res.json({message: err});
-        
-
+        res.json({ message: err });
     }
 });
 
 
-router.post('/', async(req, res) => {
-    const posts = new postmodel({
-        gun: req.body.gun,
-        price: req.body.price,
-        bulletused: req.body.bulletused
+
+router.post('/' , async(req,res) =>{
+    const post = new postmodel({
+        phone: req.body.phone,
+        brand:  req.body.brand,
+        memoryStorageCapacity: req.body.memoryStorageCapacity,
+        ram: req.body.ram,
+        formFactor: req.body.formFactor,
+        os: req.body.os,
+        color: req.body.color,
+        displaySize: req.body.displaySize,
+        otherCameraFeatures: req.body.otherCameraFeatures,
+        price: req.body.price
     });
     try{
-    const savedposts = await posts.save();
-        res.json(savedposts)
+        const savedPost = await post.save();
+        res.json(savedPost);
+
+    }catch(err){
+        res.json({ message: err });
     }
-    catch(err) {
+
+});
+
+
+router.get('/:brand', async(req,res) => {
+    try{
+    const post = await postmodel.findOne({brand: req.params.brand});
+    res.json(post);
+    }catch(err){
         res.json({message: err});
     }
-
 });
 
-//SPECIFIC POST
 
-router.get('/:gun', async(req, res) => {
-
+router.delete('/:brand', async(req,res) =>{
     try{
-        const post =  await postmodel.findOne({gun : req.params.gun})
+        const post = await postmodel.remove({brannd: req.params.brand});
         res.json(post);
-    } catch(err){
-        res.json({message: err });
+    }catch(err){
+        res.json({message: err});
     }
 });
 
-//delete post
-router.delete('post', async (req,res) => {
+
+
+router.patch('/:brand', async(req,res) => {
     try{
-        const removePost = await Post.remove({_id: req.params.post });
-        res.json(removedpost);
+    const updatedPost = await postmodel.updateOne({brand: req.params.brand},
+        {$set: { otherCameraFeatures: req.body.otherCameraFeatures}}
+        );
+    res.json(updatedPost);
     }catch(err){
-        res.json({message: err });
-    }     
-} );
+        res.json({message: err});
+    }
+});
+
+
+
 
 module.exports = router;
